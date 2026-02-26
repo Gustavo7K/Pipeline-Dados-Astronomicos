@@ -8,24 +8,24 @@ def get_available_sectors(tic_id: int):
     print(f"🔍 Consultando o MAST para {target}...")
 
     try:
-        # Busca usando TESScut como na sua imagem
+        #Busca usando TESScut
         search = lk.search_tesscut(target)
         
         if len(search) == 0:
             return None
 
-        # Converte para DataFrame para facilitar a extração
+        #Converte para DataFrame para facilitar a extração
         df = search.table.to_pandas()
 
-        # Extração do número do setor da coluna 'mission' (ex: "TESS Sector 04" -> 4)
+        #Extração do número do setor da coluna 'mission' (ex: "TESS Sector 04" -> 4)
         def extrair_setor(missao_str):
             match = re.search(r'Sector\s+(\d+)', missao_str)
             return int(match.group(1)) if match else None
 
-        # Criamos as colunas limpas
+        #Criando as colunas limpas
         df['sector_num'] = df['mission'].apply(extrair_setor)
         
-        # Criamos um resumo único (Removendo duplicatas de setor/ano/missão)
+        #Criando um resumo único (removendo duplicatas de setor/ano/missão)
         resumo = df[['sector_num', 'mission', 'year']].drop_duplicates()
         resumo = resumo.sort_values(by='sector_num').dropna()
 
